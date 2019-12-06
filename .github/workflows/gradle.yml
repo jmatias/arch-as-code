@@ -25,3 +25,7 @@ jobs:
       env: # Or as an environment variable
         STRUCTURIZR_API_KEY: ${{ secrets.STRUCTURIZR_API_KEY }}
         STRUCTURIZR_API_SECRET: ${{ secrets.STRUCTURIZR_API_SECRET }}
+      on:
+        push:
+          branches:
+            - master
