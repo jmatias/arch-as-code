@@ -2,7 +2,6 @@ package net.nahknarmi.arch.adapter;
 
 
 import com.structurizr.Workspace;
-import com.structurizr.api.StructurizrClient;
 import com.structurizr.api.StructurizrClientException;
 import org.junit.Test;
 
@@ -34,5 +33,12 @@ public class StructurizrAdapterTest {
     public void should_upload_project_from_json_file() throws Exception {
         StructurizrAdapter adapter = StructurizrAdapter.load(WORKSPACE_ID);
         adapter.upload();
+    }
+
+
+    @Test
+    public void name() {
+
+        org.openapi.example.model.Branding b;
     }
 }
