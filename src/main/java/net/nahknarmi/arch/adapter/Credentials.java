@@ -15,6 +15,9 @@ public abstract class Credentials {
     private static final String STRUCTURIZR_PATH = ".arch-as-code" + File.separator + "structurizr";
     private static final String CREDENTIALS_FILE_PATH = STRUCTURIZR_PATH + File.separator + "credentials.json";
 
+    private Credentials() {
+    }
+
     static Optional<FileInputStream> credentialsAsStream() {
         return Try.of(() -> new FileInputStream(new File(CREDENTIALS_FILE_PATH)))
                 .map(Optional::of)

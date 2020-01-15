@@ -8,6 +8,9 @@ import java.io.File;
 
 public abstract class TransformerFactory {
 
+    private TransformerFactory() {
+    }
+
     public static ArchitectureDataStructureTransformer create(File documentRoot) {
         return new ArchitectureDataStructureTransformer(
                 ImmutableList.of(

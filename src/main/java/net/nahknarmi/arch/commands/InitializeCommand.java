@@ -9,7 +9,6 @@ import org.apache.commons.logging.LogFactory;
 import picocli.CommandLine;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,7 +34,7 @@ public class InitializeCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        logger.info(String.format("Architecture as code initialized under - %s\n", productDocumentationRoot.getAbsolutePath()));
+        logger.info(String.format("Architecture as code initialized under - %s%n", productDocumentationRoot.getAbsolutePath()));
 
         createCredentials(productDocumentationRoot, workspaceId, apiKey, apiSecret);
         createManifest();
