@@ -17,8 +17,8 @@ apply plugin: 'jacoco'
 apply plugin: 'distribution'
 
 mainClassName = 'net.nahknarmi.arch.Bootstrap'
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 13
+targetCompatibility = 13
 version = '1.0'
 
 compileJava.options.encoding = 'UTF-8'
