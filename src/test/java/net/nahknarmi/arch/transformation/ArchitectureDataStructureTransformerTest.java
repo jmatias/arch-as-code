@@ -100,10 +100,14 @@ public class ArchitectureDataStructureTransformerTest {
     }
 
     private C4Model buildModel() {
-
         return new C4Model(
+<<<<<<< Updated upstream
                 ImmutableList.of(C4Person.builder().path(new C4Path("@person")).description("Foo").relationships(emptyList()).tags(emptyList()).build()),
                 ImmutableList.of(C4SoftwareSystem.builder().path(new C4Path("c4://sys")).description("sys").location(INTERNAL).tags(emptyList()).relationships(emptyList()).build()),
+=======
+                ImmutableList.of(new C4Person("person", new C4Path("@person"), "Foo", "Bar", emptyList(), emptyList(), null)),
+                ImmutableList.of(new C4SoftwareSystem("sys", new C4Path("c4://sys"), "J2EE Server", "Server", emptyList(), emptyList(), C4Location.INTERNAL)),
+>>>>>>> Stashed changes
                 emptyList(),
                 emptyList()
         );

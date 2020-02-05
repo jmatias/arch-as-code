@@ -108,13 +108,15 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                                     break;
                                 }
                                 case container: {
-                                    Container container = systemDestination.getContainerWithName(r.getWith().getName());
+                                    String containerName = r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Container name not found in path " + r.getWith().getPath()));
+                                    Container container = systemDestination.getContainerWithName(containerName);
                                     person.uses(container, description, technology);
                                     break;
                                 }
                                 case component: {
                                     Container container = systemDestination.getContainerWithName(r.getWith().getContainerName().orElseThrow(() -> new IllegalStateException("Workspace Id not found!")));
-                                    Component component = container.getComponentWithName(r.getWith().getName());
+                                    String componentName = r.getWith().getComponentName().orElseThrow(() -> new IllegalStateException("Component name not found in path " + r.getWith().getPath()));
+                                    Component component = container.getComponentWithName(componentName);
                                     person.uses(component, description, technology);
                                     break;
                                 }
@@ -267,7 +269,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                                     break;
                                 }
                                 case container: {
-                                    Container containerDestination = systemDestination.getContainerWithName(r.getWith().getName());
+                                    String containerDestinationName = r.getWith().getContainerName().orElseThrow(()-> new IllegalStateException("Container name not found in path " + r.getWith().getPath()));
+                                    Container containerDestination = systemDestination.getContainerWithName(containerDestinationName);
                                     component.uses(containerDestination, description, technology);
                                     break;
                                 }

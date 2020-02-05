@@ -16,7 +16,8 @@ decisions:
 
 model:
   people:
-    - path: "@Developer"
+    - name: "developer"
+      path: "@Developer"
       description: "Developer building software"
       location: INTERNAL
       tags:
@@ -88,7 +89,8 @@ model:
       description: "Security and system defense"
 
   systems:
-    - path: "c4://XO Chat"
+    - name: "XO chat"
+      path: "c4://XO Chat"
       description: "Realtime team communication"
       tags:
         - "Trilogy System View"
@@ -122,7 +124,8 @@ model:
         - "DevSpaces System View"
 
   containers:
-    - path: "c4://DevSpaces/DevSpaces CLI"
+    - name: "DevSpaces cli"
+      path: "c4://DevSpaces/DevSpaces CLI"
       description: "Command Line Interface for interacting with DevSpaces Backend"
       technology: "C++"
       relationships:
@@ -161,7 +164,8 @@ model:
         - "DevSpaces Container View"
 
   components:
-    - path: "c4://DevSpaces/DevSpaces API/Sign In Controller"
+    - name: "Sign In Comp"
+      path: "c4://DevSpaces/DevSpaces API/Sign In Controller"
       description: "Allows users to sign in"
       technology: "Spring MVC Rest Controller"
       tags:

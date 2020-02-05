@@ -13,6 +13,7 @@ import static java.util.Collections.emptyList;
 @AllArgsConstructor
 @NoArgsConstructor
 public abstract class BaseEntity implements Entity {
+    protected String name;
     @NonNull
     protected C4Path path;
     @NonNull

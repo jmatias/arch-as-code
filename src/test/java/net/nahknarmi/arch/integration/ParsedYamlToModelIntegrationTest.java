@@ -43,6 +43,7 @@ public class ParsedYamlToModelIntegrationTest {
         assertTrue(relationshipNames.contains("Trilogy Google G Suite"));
         assertTrue(relationshipNames.contains("Sign In Controller"));
 
+        assertEquals(person.getName(), "Developer");
         assertEquals(person.getDescription(), "Developer building software");
         assertEquals(person.getLocation(), Location.Internal);
     }
@@ -102,6 +103,7 @@ public class ParsedYamlToModelIntegrationTest {
         assertThat(relationships, hasSize(0));
         assertThat(system.getContainers(), hasSize(0));
 
+        assertEquals(system.getName(), "XO Chat");
         assertEquals(system.getDescription(), "Realtime team communication");
     }
 
@@ -225,6 +227,26 @@ public class ParsedYamlToModelIntegrationTest {
         assertEquals(container.getDescription(), "Manage dev spaces");
         assertEquals(container.getTechnology(), "Angular");
     }
+    @Test
+    public void should_build_container_devspaces_cli() throws IOException {
+        String systemName = "DevSpaces";
+        String containerName = "DevSpaces CLI";
+        Workspace workspace = getWorkspace();
+
+        SoftwareSystem system = workspace.getModel().getSoftwareSystemWithName(systemName);
+        Container container = system.getContainerWithName(containerName);
+
+        Set<Relationship> relationships = container.getRelationships();
+        List<String> relationshipNames = relationships.stream().map(r -> r.getDestination().getName()).collect(Collectors.toList());
+
+        assertThat(relationships, hasSize(2));
+        assertTrue(relationshipNames.contains("DevSpaces API"));
+        assertTrue(relationshipNames.contains("SaasOps"));
+
+        assertEquals(container.getDescription(), "Command Line Interface for interacting with DevSpaces Backend");
+        assertEquals(container.getTechnology(), "C++");
+        assertEquals(container.getName(), "DevSpaces CLI");
+    }
 
     @Test
     public void should_build_container_devspaces_api() throws IOException {
@@ -276,6 +298,7 @@ public class ParsedYamlToModelIntegrationTest {
 
         assertEquals(component.getDescription(), "Allows users to sign in");
         assertEquals(component.getTechnology(), "Spring MVC Rest Controller");
+        assertEquals(component.getName(), "Sign In Controller");
     }
 
     @Test

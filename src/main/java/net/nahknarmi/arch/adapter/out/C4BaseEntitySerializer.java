@@ -16,6 +16,7 @@ abstract class C4BaseEntitySerializer<T extends BaseEntity> extends StdSerialize
     }
 
     protected void baseEntityWrite(T value, JsonGenerator gen) throws IOException {
+        gen.writeStringField("name", value.getName());
         gen.writeStringField("path", value.getPath().getPath());
         gen.writeStringField("description", value.getDescription());
 
