@@ -12,26 +12,22 @@ public class ModelMediator {
 
     public Person person(C4Path path) {
         String id = path.getPath();
-        Person element = (Person) model.getElement(id);
-        return element;
+        return (Person) model.getElement(id);
     }
 
     public SoftwareSystem softwareSystem(C4Path path) {
-        String id = path.getPath();
-        SoftwareSystem element = (SoftwareSystem) model.getElement(id);
-        return element;
+        String id = path.systemPath().getPath();
+        return (SoftwareSystem) model.getElement(id);
     }
 
     public Container container(C4Path path) {
-        String id = path.getPath();
-        Container element = (Container) model.getElement(id);
-        return element;
+        String id = path.containerPath().getPath();
+        return (Container) model.getElement(id);
     }
 
     public Component component(C4Path path) {
-        String id = path.getPath();
-        Component element = (Component) model.getElement(id);
-        return element;
+        String id = path.componentPath().getPath();
+        return (Component) model.getElement(id);
     }
 
 }

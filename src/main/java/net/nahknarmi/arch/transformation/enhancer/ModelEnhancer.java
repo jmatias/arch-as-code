@@ -4,6 +4,7 @@ import com.structurizr.Workspace;
 import com.structurizr.model.*;
 import net.nahknarmi.arch.domain.ArchitectureDataStructure;
 import net.nahknarmi.arch.domain.c4.*;
+import net.nahknarmi.arch.domain.c4.view.ModelMediator;
 import net.nahknarmi.arch.generator.PathIdGenerator;
 import net.nahknarmi.arch.transformation.LocationTransformer;
 
@@ -54,9 +55,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addContainer(Model model, C4Container c) {
-        String systemPath = c.getPath().systemPath().getPath();
-        SoftwareSystem softwareSystem = (SoftwareSystem) model.getElement(systemPath);
-
+        SoftwareSystem softwareSystem = new ModelMediator(model).softwareSystem(c.getPath().systemPath());
         Container container = softwareSystem.addContainer(c.name(), c.getDescription(), c.getTechnology());
         container.addTags(getTags(c));
     }
@@ -66,7 +65,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addComponent(Model model, C4Component c) {
-        Container container = (Container) model.getElement(c.getPath().containerPath().getPath());
+        Container container = new ModelMediator(model).container(c.getPath().containerPath());
         Component component = container.addComponent(c.name(), c.getDescription(), c.getTechnology());
 
         component.addTags(getTags(c));
@@ -84,8 +83,10 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addPeopleRelationships(Model workspaceModel, C4Model dataStructureModel) {
+        ModelMediator modelMediator = new ModelMediator(workspaceModel);
+
         dataStructureModel.getPeople().forEach(p -> {
-            Person person = (Person) workspaceModel.getElement(p.getPath().getPath());
+            Person person = modelMediator.person(p.getPath());
 
             p.getRelationships()
                     .forEach(r -> {
@@ -94,8 +95,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                         C4Type typeDestination = r.getWith().type();
 
                         if (r.getAction() == C4Action.USES) {
-                            String systemPath = r.getWith().systemPath().getPath();
-                            SoftwareSystem systemDestination = (SoftwareSystem) workspaceModel.getElement(systemPath);
+                            SoftwareSystem systemDestination = modelMediator.softwareSystem(r.getWith());
 
                             switch (typeDestination) {
                                 case system: {
@@ -103,14 +103,12 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                                     break;
                                 }
                                 case container: {
-                                    Container container = (Container) workspaceModel.getElement(r.getWith().containerPath().getPath());
-
+                                    Container container = modelMediator.container(r.getWith());
                                     person.uses(container, description, technology);
                                     break;
                                 }
                                 case component: {
-                                    Component component = (Component) workspaceModel.getElement(r.getWith().componentPath().getPath());
-
+                                    Component component = modelMediator.component(r.getWith());
                                     person.uses(component, description, technology);
                                     break;
                                 }
@@ -122,8 +120,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                             if (typeDestination != C4Type.person) {
                                 throw new IllegalStateException("Action INTERACTS_WITH supported only with type person, not: " + typeDestination);
                             } else {
-                                Person personDestination = (Person) workspaceModel.getElement(r.getWith().getPath());
-
+                                Person personDestination = modelMediator.person(r.getWith());
                                 person.interactsWith(personDestination, description, technology);
                             }
                         }
@@ -132,8 +129,9 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addSystemRelationships(Model workspaceModel, C4Model dataStructureModel) {
+        ModelMediator modelMediator = new ModelMediator(workspaceModel);
         dataStructureModel.getSystems().forEach(s -> {
-            SoftwareSystem softwareSystem = (SoftwareSystem) workspaceModel.getElement(s.getPath().systemPath().getPath());
+            SoftwareSystem softwareSystem = modelMediator.softwareSystem(s.getPath());
 
             s.getRelationships()
                     .forEach(r -> {
@@ -142,7 +140,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                         C4Type typeDestination = r.getWith().type();
 
                         if (r.getAction() == C4Action.USES) {
-                            SoftwareSystem systemDestination = (SoftwareSystem) workspaceModel.getElement(r.getWith().systemPath().getPath());
+                            SoftwareSystem systemDestination = modelMediator.softwareSystem(r.getWith());
 
                             switch (typeDestination) {
                                 case system: {
@@ -150,12 +148,12 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                                     break;
                                 }
                                 case container: {
-                                    Container containerDestination = (Container) workspaceModel.getElement(r.getWith().containerPath().getPath());
+                                    Container containerDestination = modelMediator.container(r.getWith());
                                     softwareSystem.uses(containerDestination, description, technology);
                                     break;
                                 }
                                 case component: {
-                                    Component component = (Component) workspaceModel.getElement(r.getWith().componentPath().getPath());
+                                    Component component = modelMediator.component(r.getWith());
                                     softwareSystem.uses(component, description, technology);
                                     break;
                                 }
@@ -167,8 +165,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                             if (typeDestination != C4Type.person) {
                                 throw new IllegalStateException("Action DELIVERS supported only with type person, not: " + typeDestination);
                             } else {
-                                String personId = r.getWith().getPath();
-                                Person personDestination = (Person) workspaceModel.getElement(personId);
+                                Person personDestination = modelMediator.person(r.getWith());
                                 softwareSystem.delivers(personDestination, description, technology);
                             }
                         }
@@ -177,8 +174,10 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addContainerRelationships(Model workspaceModel, C4Model dataStructureModel) {
+        ModelMediator modelMediator = new ModelMediator(workspaceModel);
+
         dataStructureModel.getContainers().forEach(c -> {
-            Container container = (Container) workspaceModel.getElement(c.getPath().containerPath().getPath());
+            Container container = modelMediator.container(c.getPath());
 
             c.getRelationships()
                     .forEach(r -> {
@@ -187,7 +186,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                         C4Type typeDestination = r.getWith().type();
 
                         if (r.getAction() == C4Action.USES) {
-                            SoftwareSystem systemDestination = (SoftwareSystem) workspaceModel.getElement(r.getWith().systemPath().getPath());
+                            SoftwareSystem systemDestination = modelMediator.softwareSystem(r.getWith());
 
                             switch (typeDestination) {
                                 case system: {
@@ -195,13 +194,12 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                                     break;
                                 }
                                 case container: {
-                                    Container containerDestination = (Container) workspaceModel.getElement(r.getWith().containerPath().getPath());
-
+                                    Container containerDestination = modelMediator.container(r.getWith());
                                     container.uses(containerDestination, description, technology);
                                     break;
                                 }
                                 case component: {
-                                    Component componentDestination = (Component) workspaceModel.getElement(r.getWith().componentPath().getPath());
+                                    Component componentDestination = modelMediator.component(r.getWith());
 
                                     if (componentDestination == null) {
                                         System.err.println("Hanging reference - " + r.getWith());
@@ -219,9 +217,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                             if (typeDestination != C4Type.person) {
                                 throw new IllegalStateException("Action DELIVERS supported only with type person, not: " + typeDestination);
                             } else {
-                                String personId = r.getWith().getPath();
-                                Person personDestination = (Person) workspaceModel.getElement(personId);
-                                container.delivers(personDestination, description, technology);
+                                Person person = modelMediator.person(r.getWith());
+                                container.delivers(person, description, technology);
                             }
                         }
                     });
@@ -229,8 +226,9 @@ public class ModelEnhancer implements WorkspaceEnhancer {
     }
 
     private void addComponentRelationships(Model workspaceModel, C4Model dataStructureModel) {
+        ModelMediator modelMediator = new ModelMediator(workspaceModel);
         dataStructureModel.getComponents().forEach(comp -> {
-            Component component = (Component) workspaceModel.getElement(comp.getPath().componentPath().getPath());
+            Component component = modelMediator.component(comp.getPath());
 
             comp.getRelationships()
                     .forEach(r -> {
@@ -239,7 +237,7 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                         C4Type typeDestination = r.getWith().type();
 
                         if (r.getAction() == C4Action.USES) {
-                            SoftwareSystem systemDestination = (SoftwareSystem) workspaceModel.getElement(r.getWith().systemPath().getPath());
+                            SoftwareSystem systemDestination = modelMediator.softwareSystem(r.getWith());
 
                             switch (typeDestination) {
                                 case system: {
@@ -247,12 +245,12 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                                     break;
                                 }
                                 case container: {
-                                    Container containerDestination = (Container) workspaceModel.getElement(r.getWith().containerPath().getPath());
+                                    Container containerDestination = modelMediator.container(r.getWith());
                                     component.uses(containerDestination, description, technology);
                                     break;
                                 }
                                 case component: {
-                                    Component componentDestination = (Component) workspaceModel.getElement(r.getWith().componentPath().getPath());
+                                    Component componentDestination = modelMediator.component(r.getWith());
 
                                     if (componentDestination == null) {
                                         System.err.println("Hanging reference " + r.getWith());
@@ -270,9 +268,8 @@ public class ModelEnhancer implements WorkspaceEnhancer {
                             if (typeDestination != C4Type.person) {
                                 throw new IllegalStateException("Action DELIVERS supported only with type person, not: " + typeDestination);
                             } else {
-                                String personId = r.getWith().getPath();
-                                Person personDestination = (Person) workspaceModel.getElement(personId);
-                                component.delivers(personDestination, description, technology);
+                                Person person = modelMediator.person(r.getWith());
+                                component.delivers(person, description, technology);
                             }
                         }
                     });
