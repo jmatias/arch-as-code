@@ -8,6 +8,7 @@ import lombok.NonNull;
 import net.nahknarmi.arch.domain.c4.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.stream.Collectors.toList;
@@ -101,22 +102,29 @@ public class NumericIdGenerator implements IdGenerator {
                 .stream()
                 .filter(t -> t._1.getId().equals(relationship.getSourceId()))
                 .filter(t -> {
-                    String entityId = t._2.getWithId();
-                    return entityId.equals(relationship.getDestinationId());
+                    String targetEntityId = t._2.getWithId();
+                    return targetEntityId.equals(relationship.getDestinationId());
                 })
                 .filter(t -> {
-                    if (relationship.getTechnology() != null) {
-                        return t._2.getTechnology().equals(relationship.getTechnology());
-                    } else {
-                        return true;
-                    }
+//                    if (relationship.getTechnology() != null) {
+//                        return relationship.getTechnology().equals(t._2.getTechnology());
+//                    } else {
+//                        return true;
+//                    }
+
+                    return (relationship.getTechnology() == null && t._2().getTechnology() == null) ||
+                            Optional.ofNullable(relationship.getTechnology()).orElse("").equals(t._2().getTechnology());
                 })
+                .filter(t -> (relationship.getDescription() == null && t._2().getDescription() == null) ||
+                        Optional.ofNullable(relationship.getDescription()).orElse("").equals(t._2().getTechnology()))
                 .collect(toList());
 
         if (possibleRelationships.isEmpty()) {
             return null;
-        } else {
+        } else if (possibleRelationships.size() == 1) {
             return possibleRelationships.get(0)._2.getId();
+        } else {
+            throw new IllegalStateException("Unexpected number of possible relationships " + possibleRelationships.size());
         }
     }
 

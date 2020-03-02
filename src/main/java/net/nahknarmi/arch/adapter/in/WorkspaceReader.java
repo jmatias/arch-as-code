@@ -12,6 +12,7 @@ import net.nahknarmi.arch.domain.c4.view.*;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
@@ -114,7 +115,7 @@ public class WorkspaceReader {
                                             .containerId(cont.getId())
                                             .path(c4Path)
                                             .technology(co.toString())
-                                            .description(co.getDescription())
+                                            .description(Optional.ofNullable(co.getDescription()).orElse(""))
                                             .tags(tags)
                                             .name(co.getName())
                                             .relationships(relationships)
@@ -140,8 +141,8 @@ public class WorkspaceReader {
                             .id(c.getId())
                             .systemId(sys.getId())
                             .path(path)
-                            .technology(c.getTechnology())
-                            .description(c.getDescription())
+                            .technology(Optional.ofNullable(c.getTechnology()).orElse(""))
+                            .description(Optional.ofNullable(c.getDescription()).orElse(""))
                             .tags(tags)
                             .name(c.getName())
                             .relationships(relationships)
@@ -163,7 +164,7 @@ public class WorkspaceReader {
                     return C4SoftwareSystem.builder()
                             .id(sys.getId())
                             .path(path)
-                            .description(sys.getDescription())
+                            .description(Optional.ofNullable(sys.getDescription()).orElse(""))
                             .location(convertLocation(sys.getLocation()))
                             .tags(tags)
                             .name(sys.getName())
