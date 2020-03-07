@@ -7,6 +7,7 @@ buildscript {
     dependencies {
         classpath "io.freefair.gradle:lombok-plugin:4.1.6"
         classpath "com.palantir.gradle.gitversion:gradle-git-version:0.12.2"
+        classpath "gradle.plugin.org.mikeneck:graalvm-native-image-plugin:0.3.0"
     }
 }
 
@@ -17,6 +18,8 @@ apply plugin: "io.freefair.lombok"
 apply plugin: 'jacoco'
 apply plugin: 'distribution'
 apply plugin: "com.palantir.git-version"
+apply plugin: "org.mikeneck.graalvm-native-image"
+
 
 mainClassName = 'net.nahknarmi.arch.Bootstrap'
 sourceCompatibility = JavaVersion.VERSION_11
@@ -52,6 +55,8 @@ dependencies {
 
     //logging
     implementation 'org.slf4j:slf4j-nop:1.7.30'
+    implementation 'org.slf4j:slf4j-simple:1.7.28'
+    implementation 'commons-logging:commons-logging:1.2'
 
     //Testing
     //Makesure hamcrest is above junit see - https://stackoverflow.com/questions/7869711/getting-nosuchmethoderror-org-hamcrest-matcher-describemismatch-when-running
@@ -68,9 +73,6 @@ jacocoTestCoverageVerification {
                 value = 'COVEREDRATIO'
                 minimum = 0.8
             }
-            excludes = [
-                    'net.nahknarmi.arch.Bootstrap',
-            ]
         }
     }
 }
@@ -114,4 +116,28 @@ task generateVersionTxt {
           Version: $rootProject.version, build $details.gitHash 
           """
     }
+}
+
+compileJava {
+    options.compilerArgs += ["-Aproject=${project.name}"]
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'net.nahknarmi.arch.Bootstrap'
+        )
+    }
+}
+
+
+nativeImage {
+    graalVmHome = '/Library/Java/JavaVirtualMachines/graalvm-ce-java11-20.0.0/Contents/Home/'
+    mainClass = 'net.nahknarmi.arch.Bootstrap'
+    executableName = 'arch-as-code'
+    arguments(
+            '--no-fallback',
+            '--enable-all-security-services',
+            '--report-unsupported-elements-at-runtime'
+    )
 }
